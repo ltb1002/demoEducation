@@ -1,11 +1,14 @@
-import 'package:education_elearning/widgets/custom.dart';
+import 'package:education_elearning/customs/custom_email_field.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
-  final TextEditingController controller = TextEditingController();
-  final String hintText = "Email or Phone number";
-  final IconData icon = Icons.email;
-  final bool obscure = false;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+
+  LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,55 +19,108 @@ class LoginScreen extends StatelessWidget {
             begin: Alignment.topRight,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromARGB(255, 175, 212, 226),
-              Color.fromARGB(255, 211, 203, 175),
+              Color.fromARGB(255, 240, 240, 240),
+              Color.fromARGB(255, 181, 231, 210),
             ],
           ),
         ),
         width: double.infinity,
         child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Column(
-                  children: [
-                    Image.asset("assets/images/img_4.png", height: 300),
-                  ],
+          child: Form(
+            key: _formKey, // bọc trong Form
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Image.asset("assets/images/img_4.png", height: 200),
                 ),
-              ),
-              const SizedBox(height: 5),
-              const Text(
-                "Create Account",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
+                const SizedBox(height: 10),
+                const Text(
+                  "Create Account",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              const Text(
-                "In the lessons we learn new words and rules \nfor vocabularies, continues and articles",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 20),
+
+                // Email field
+                CustomTextField(
+                  label: "Email",
+                  hintText: "",
+                  icon: Icons.email,
+                  controller: emailController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter email';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Invalid email';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              const SizedBox(height: 20),
-              CustomTextField(
-                controller: controller,
-                hintText: hintText,
-                icon: icon,
-              ),
-              const SizedBox(height: 20),
-              CustomTextField(
-                controller: controller,
-                hintText: hintText,
-                icon: icon,
-              ),
-            ],
+
+                // Password field
+                CustomTextField(
+                  label: "Password",
+                  hintText: "",
+                  icon: Icons.lock,
+                  obscureText: true,
+                  controller: passwordController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
+                ),
+
+                // Confirm Password field
+                CustomTextField(
+                  label: "Confirm Password",
+                  hintText: "",
+                  icon: Icons.lock_outline,
+                  obscureText: true,
+                  controller: confirmPasswordController,
+                  validator: (value) {
+                    if (value != passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 20),
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 80,
+                      vertical: 14,
+                    ),
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // ✅ Nếu form hợp lệ
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Form is valid!")),
+                      );
+                    }
+                  },
+                  child: const Text("Sign Up"),
+                ),
+              ],
+            ),
           ),
         ),
       ),
